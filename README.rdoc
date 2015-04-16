@@ -4,4 +4,4 @@ This GEM provides a simple way of syncronising your Rails 3 / 4 assets with an A
 
 == Installation
 
-  # gem S3AssetSync
+  # gem 's3_asset_sync'
