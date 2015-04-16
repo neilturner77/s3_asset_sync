@@ -9,9 +9,9 @@ Gem::Specification.new do |s|
   s.version     = S3AssetSync::VERSION
   s.authors     = ["Neil Turner"]
   s.email       = ["neil@neilturner.me"]
-  s.homepage    = "TODO"
+  s.homepage    = "https://github.com/neilturner77/s3_asset_sync"
   s.summary     = "Simple way to syncronise your Rails 3 / 4 assets with an AWS S3 Bucket."
-  s.description = "TODO"
+  s.description = "Simple way to syncronise your Rails 3 / 4 assets with an AWS S3 Bucket."
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
