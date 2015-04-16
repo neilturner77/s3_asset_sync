@@ -16,7 +16,7 @@ Edit that file and replace the default values with your own AWS details.
 
 == Usage
 
-By default, assets will be syncronized automatically after running:
+By default, assets will be syncronized automatically after precompilation:
 
   rake assets:precompile
 
@@ -24,6 +24,6 @@ If this is not the desired behaviour then simply edit the configuration value as
 
  Rails.application.config.s3_asset_sync.run_after_precompile = false
 
-Expired assets aren't automatically removed as load balanced servers may not all be updated in one go.  If you wish to purge expired assets from S3 simply run the following command:
+Expired assets won't be automatically removed from S3 as some nodes within a load balanced setup may temporarily require older assets. To delete expired assets from S3 run:
 
   rake assets:purge_s3
