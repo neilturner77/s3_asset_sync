@@ -24,6 +24,10 @@ If this is not the desired behaviour then simply edit the configuration value as
 
  Rails.application.config.s3_asset_sync.run_after_precompile = false
 
+To manually syncronize assets run:
+
+  rake assets:sync_to_s3
+
 Expired assets won't be automatically removed from S3 as some nodes within a load balanced setup may temporarily require older assets. To delete expired assets from S3 run:
 
   rake assets:purge_s3
