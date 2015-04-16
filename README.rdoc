@@ -1,6 +1,6 @@
 = S3 Asset Sync
 
-This GEM provides a simple way of syncronizing your Rails 3 / 4 assets with an AWS S3 Bucket.
+This GEM provides a simple way of syncronizing your Rails 4 assets with an AWS S3 Bucket.
 
 == Installation
 
