@@ -21,13 +21,27 @@ module S3AssetSync
 
     s3 = Aws::S3::Client.new
 
-    Dir.foreach(Rails.root.join('public','assets')) do |file|
-      next if file == '.' || file == '..'
-      puts "SYNC: #{file}"
-      self.s3_upload_object(s3, file) unless self.s3_object_exists?(s3, file)
-    end
+    self.sync_directory(s3, '')
 
     puts "Asset sync successfully completed...".green
+  end
+
+  def self.sync_directory(s3, path)
+    assets_dir = Rails.root.join('public','assets')
+    current_dir = "#{assets_dir}#{path}"
+    Dir.foreach(current_dir) do |file|
+      next if file == '.' || file == '..'
+      file_path = "#{path}/#{file}"
+      file_key = file_path[1..-1]
+      full_file_path = "#{assets_dir}#{path}/#{file}"
+      
+      if File.file?(full_file_path)
+        puts "SYNC: #{file_path}"
+        self.s3_upload_object(s3, file_key) unless self.s3_object_exists?(s3, file_key)
+      elsif File.directory?(full_file_path)
+        self.sync_directory(s3, file_path)
+      end
+    end
   end
 
   ##
@@ -89,6 +103,7 @@ module S3AssetSync
       body: File.open(Rails.root.join('public','assets', key)),
       key: key
     )
+    puts resp
   end
 
   ##
