@@ -27,12 +27,13 @@ module S3AssetSync
   end
 
   def self.sync_directory(s3, path)
-    assets_dir = Rails.root.join('public','assets')
+    assets_dir = File.join(Rails.public_path, Rails.application.config.assets.prefix)
+
     current_dir = "#{assets_dir}#{path}"
     Dir.foreach(current_dir) do |file|
       next if file == '.' || file == '..'
-      file_path = "#{path}/#{file}"
-      file_key = file_path[1..-1]
+      file_path = File.join(path,file)
+      file_key = File.join(Rails.application.config.assets.prefix, path,file)[1..-1]
       full_file_path = "#{assets_dir}#{path}/#{file}"
       
       if File.file?(full_file_path)
@@ -69,7 +70,8 @@ module S3AssetSync
     end
 
     keys.each do |key|
-      if !File.exists?(Rails.root.join('public', 'assets', key))
+      fn = File.join(Rails.public_path, Rails.application.config.assets.prefix, key)
+      if !File.exists?(fn)
         self.s3_delete_object(s3, key) 
         puts "DELETED: #{key}"
       end
@@ -97,12 +99,34 @@ module S3AssetSync
   # Uploads an object to the specified S3 Bucket.
   #
   def self.s3_upload_object(client, key)
-    resp = client.put_object(
+    fn = File.join(Rails.public_path, key)
+
+    ext = File.extname(fn)[1..-1] # e.g. "gif"
+    mime = Mime::Type.lookup_by_extension(ext).to_s # unknown type will be ""
+
+    file = {
       acl: "public-read",
       bucket: Rails.application.config.s3_asset_sync.s3_bucket,
-      body: File.open(Rails.root.join('public','assets', key)),
-      key: key
-    )
+      body: File.open(fn),
+      key: key,
+      content_type: mime
+    }
+
+    # ported from rumblelabs/asset_sync repository
+    one_year = 31557600
+    if /-[0-9a-fA-F]{32}$/.match(File.basename(fn,File.extname(fn)))
+      file.merge!({
+        :cache_control => "public, max-age=#{one_year}",
+        :expires => CGI.rfc1123_date(Time.now + one_year)
+      })
+    end
+
+    if ext == 'gz'
+      file.merge!({
+        :content_encoding => 'gzip'
+      })
+    end
+    resp = client.put_object(file)
     puts resp
   end
 
