@@ -70,7 +70,7 @@ module S3AssetSync
     end
 
     keys.each do |key|
-      fn = File.join(Rails.public_path, Rails.application.config.assets.prefix, key)
+      fn = File.join(Rails.public_path, key)
       if !File.exists?(fn)
         self.s3_delete_object(s3, key) 
         puts "DELETED: #{key}"
